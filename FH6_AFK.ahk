@@ -48,11 +48,25 @@ Steps := [
 		Y: 200,
 		Color: 0xCAFF02,
         ActionType: "LoopKey",
+		DelayBefore: 1000,
         ActionValue: "{PgDn}",
 		Count: 7,
-		Interval: 400,
+		Interval: 600,
 		DelayAfter: 1000
     },
+	
+	/*
+	{
+        Name: "My History",
+		X: 716,
+		Y: 200,
+		Color: 0xCAFF02,
+        ActionType: "Click",
+        ClickX: 106,
+        ClickY: 178,
+        DelayAfter: 2000
+    },
+	*/
 	
 	{
         Name: "Select Race",
@@ -336,6 +350,9 @@ F1::
             if !step.HasOwnProp("Color")
             {
                 ToolTip("Executing: " step.Name)
+				
+				if step.HasOwnProp("DelayBefore") ; Added by J1soon
+                    Sleep(step.DelayBefore)
 
                 PerformAction(step)
 
