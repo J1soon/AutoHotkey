@@ -367,7 +367,7 @@ F1::
     }
 }
 
-^W::
+^E::
 {
     ToolTip()
     ExitApp()
