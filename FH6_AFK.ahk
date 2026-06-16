@@ -237,7 +237,7 @@ WaitForColor(step)
 
     timeout := step.HasOwnProp("Timeout")
         ? step.Timeout
-        : 30000
+        : 300000
 
     radius := step.HasOwnProp("SearchRadius")
         ? step.SearchRadius
