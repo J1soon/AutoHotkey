@@ -10,7 +10,7 @@ Steps := [
         Name: "Open Menu",
         ActionType: "Key",
         ActionValue: "{Esc}",
-		DelayAfter: 500
+		DelayAfter: Rand(400,600)
     },
 
     {
@@ -22,8 +22,8 @@ Steps := [
         ActionType: "LoopKey",
         ActionValue: "{PgUp}",
 		Count: 2,
-		Interval: 200,
-		DelayAfter: 300
+		Interval: Rand(200,300),
+		DelayAfter: Rand(300,500)
     },
 	
 	{
@@ -39,7 +39,7 @@ Steps := [
 		Color: 0xC1F90A,
         ActionType: "Key",
         ActionValue: "{Enter}",
-		DelayAfter: 500
+		DelayAfter: Rand(500,600)
     },
 	
 	{
@@ -48,11 +48,11 @@ Steps := [
 		Y: 200,
 		Color: 0xCAFF02,
         ActionType: "LoopKey",
-		DelayBefore: 1000,
+		DelayBefore: Rand(600,1000),
         ActionValue: "{PgDn}",
 		Count: 7,
-		Interval: 600,
-		DelayAfter: 1000
+		Interval: Rand(400,600),
+		DelayAfter: Rand(800,1000)
     },
 	
 	/*
@@ -64,7 +64,7 @@ Steps := [
         ActionType: "Click",
         ClickX: 106,
         ClickY: 178,
-        DelayAfter: 2000
+        DelayAfter: Rand(2000,2000)
     },
 	*/
 	
@@ -75,7 +75,7 @@ Steps := [
 		Color: 0xCAFF02,
         ActionType: "Key",
         ActionValue: "{Enter}",
-		DelayAfter: 1000
+		DelayAfter: Rand(800,1200)
     },
 	
 	{
@@ -85,7 +85,7 @@ Steps := [
 		Color: 0xCAFF02,
         ActionType: "Key",
         ActionValue: "{Enter}",
-		DelayAfter: 2000
+		DelayAfter: Rand(1800,2200)
     },
 	
 	{
@@ -95,7 +95,7 @@ Steps := [
 		Color: 0xCAFF02,
         ActionType: "Key",
         ActionValue: "{Enter}",
-		DelayAfter: 15000
+		DelayAfter: Rand(15000,20000)
     },
 	
 	{
@@ -105,14 +105,14 @@ Steps := [
 		Color: 0xCAFF02,
         ActionType: "Key",
         ActionValue: "{Enter}",
-		DelayAfter: 2000
+		DelayAfter: Rand(2000,3000)
     },
 	
 	{
         Name: "Driving !!",
         ActionType: "Key",
         ActionValue: "{W Down}",
-		DelayAfter: 340000 ; 5 mins 40 secs
+		DelayAfter: Rand(340000,340000) ; 5 mins 40 secs
     },
 	
 	{
@@ -122,7 +122,7 @@ Steps := [
 		Color: 0xCAFF02,
         ActionType: "Key",
         ActionValue: "{W Up}{Enter}",
-		DelayAfter: 5000
+		DelayAfter: Rand(5000,5000)
     },
 	
 	{
@@ -132,7 +132,7 @@ Steps := [
 		Color: 0xCAFF02,
         ActionType: "Key",
         ActionValue: "{Esc}",
-		DelayAfter: 6000
+		DelayAfter: Rand(6000,7000)
     }
 	
 ]
@@ -142,7 +142,7 @@ Steps := [
 Steps := [
 
     ; Wait for a button to appear
-	; DelayAfter will dela after pressin key
+	; DelayAfter will dela after pressing key
 	; Timeout is the time to stop detecting color and exit app
     {
         Name: "Accept Match",
@@ -152,8 +152,8 @@ Steps := [
         Tolerance: 15,
         ActionType: "Key",
         ActionValue: "{Enter}",
-        Timeout: 30000,
-        DelayAfter: 1000
+        Timeout: Rand(30000,30000),
+        DelayAfter: Rand(1000,1000)
     },
 
     ; Execute immediately after previous step
@@ -161,7 +161,7 @@ Steps := [
         Name: "Wait 2 Seconds Then Press A",
         ActionType: "Key",
         ActionValue: "a",
-        DelayAfter: 2000
+        DelayAfter: Rand(2000,2000)
     },
 
     ; Click immediately
@@ -170,7 +170,7 @@ Steps := [
         ActionType: "Click",
         ClickX: 800,
         ClickY: 600,
-        DelayAfter: 1000
+        DelayAfter: Rand(1000,1000)
     },
 
     ; Wait for another color
@@ -182,8 +182,8 @@ Steps := [
         Tolerance: 15,
         ActionType: "Key",
         ActionValue: "{Space}",
-        Timeout: 30000,
-        DelayAfter: 1000
+        Timeout: Rand(30000,30000),
+        DelayAfter: Rand(1000,1000)
     },
 	
 	; Press Enter 10 times with interval of 200ms
@@ -192,7 +192,7 @@ Steps := [
 		ActionType: "LoopKey",
 		ActionValue: "{Enter}",
 		Count: 10,
-		Interval: 200
+		Interval: Rand(200,200)
 	},
 	
 	{
@@ -211,6 +211,22 @@ Steps := [
 ; ==========================================
 ; FUNCTIONS
 ; ==========================================
+
+Rand(min, max)
+{
+    return {
+        Min: min,
+        Max: max
+    }
+}
+
+GetValue(value)
+{
+    if IsObject(value)
+        return Random(value.Min, value.Max)
+
+    return value
+}
 
 ColorMatch(color1, color2, tolerance := 10)
 {
@@ -295,6 +311,16 @@ PerformAction(step)
         case "Click":
             Click(step.ClickX, step.ClickY)
 
+		case "KeyPress":
+
+    		holdTime := step.HasOwnProp("HoldTime")
+        		? step.HoldTime
+        		: 30
+
+    		Send("{" step.Key " Down}")
+    		Sleep(GetValue(holdTime))
+    		Send("{" step.Key " Up}")
+
         case "LoopKey":
 
             count := step.HasOwnProp("Count")
@@ -310,7 +336,7 @@ PerformAction(step)
                 Send(step.ActionValue)
 
                 if (A_Index < count)
-                    Sleep(interval)
+                    Sleep(GetValue(interval))
             }
 
         default:
@@ -352,12 +378,12 @@ F1::
                 ToolTip("Executing: " step.Name)
 				
 				if step.HasOwnProp("DelayBefore") ; Added by J1soon
-                    Sleep(step.DelayBefore)
+                    Sleep(GetValue(step.DelayBefore))
 
                 PerformAction(step)
 
                 if step.HasOwnProp("DelayAfter")
-                    Sleep(step.DelayAfter)
+                    Sleep(GetValue(step.DelayAfter))
 
                 continue
             }
@@ -373,10 +399,13 @@ F1::
 
             ToolTip("Detected: " step.Name)
 
+			if step.HasOwnProp("DelayBefore") ; Added by J1soon
+                Sleep(GetValue(step.DelayBefore))
+
             PerformAction(step)
 
             if step.HasOwnProp("DelayAfter")
-                Sleep(step.DelayAfter)
+                Sleep(GetValue(step.DelayAfter))
         }
 
         ToolTip("Sequence Complete - Restarting")
